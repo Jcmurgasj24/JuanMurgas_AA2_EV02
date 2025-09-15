@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hola Mundo Animado</title>
+  <style>
+    :root{
+      --bg1:#0f172a; /* slate-900 */
+      --bg2:#0ea5a4; /* teal */
+      --accent:#ffd166; /* warm */
+      --glass: rgba(255,255,255,0.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+
+    /* animated gradient background */
+    .bg {
+      position:fixed;inset:0;z-index:-2;overflow:hidden;
+      background: linear-gradient(120deg,var(--bg1), #06202a 30%, #07122a 60%, #0b1220);
+    }
+    .bg::before{
+      content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 10% 20%, rgba(14,165,164,0.18), transparent 8%), radial-gradient(circle at 90% 80%, rgba(253,224,71,0.12), transparent 10%);
+      animation: floatBG 18s linear infinite;
+      filter: blur(40px) saturate(120%);
+    }
+    @keyframes floatBG{
+      0%{transform:translate3d(0,0,0) scale(1)}
+      50%{transform:translate3d(-6%,4%,0) scale(1.05)}
+      100%{transform:translate3d(0,0,0) scale(1)}
+    }
+
+    /* center frame */
+    .stage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+    .card{
+      width:min(920px,95%);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:48px;box-shadow:0 10px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.04);
+      display:grid;grid-template-columns:1fr 260px;gap:24px;align-items:center
+    }
+
+    /* title animated gradient text */
+    .title-wrap{display:flex;flex-direction:column;gap:14px}
+    .hello{
+      font-size:clamp(36px,6vw,64px);line-height:0.9;font-weight:800;letter-spacing:-1px;
+      background:linear-gradient(90deg,#ffd166,#fb8b24,#ef476f,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent;
+      animation: hue 6s linear infinite;
+    }
+    @keyframes hue{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(30deg)}100%{filter:hue-rotate(0deg)}}
+
+    .subtitle{
+      font-size:clamp(14px,1.8vw,18px);color:rgba(255,255,255,0.9)
+    }
+
+    /* small animated badge */
+    .badge{display:inline-grid;place-items:center;padding:8px 12px;border-radius:999px;background:var(--glass);color:var(--accent);font-weight:600;width:max-content}
+
+    /* typewriter text */
+    .typewriter{font-family:monospace;color:rgba(255,255,255,0.85);font-size:16px;min-height:24px}
+    .typewriter .wrap{display:inline-block;overflow:hidden;border-right:2px solid rgba(255,255,255,0.6);white-space:nowrap;animation: typing 3.8s steps(36,end) 1 forwards, blink 800ms steps(1,end) infinite}
+    @keyframes typing{from{width:0}to{width:100%}}@keyframes blink{50%{border-color:transparent}}
+
+    /* decorative right column */
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .panel h4{margin:0 0 10px 0;color:rgba(255,255,255,0.95)}
+    .panel p{margin:0 0 12px 0;color:rgba(255,255,255,0.75);font-size:14px}
+
+    /* wave animated underline */
+    .wave{display:inline-block;height:6px;width:160px;margin-top:8px;background:linear-gradient(90deg,#7c3aed,#06b6d4);border-radius:999px;animation: wave 2.2s ease-in-out infinite}
+    @keyframes wave{0%{transform:translateX(0) scaleX(1)}50%{transform:translateX(6px) scaleX(1.05)}100%{transform:translateX(0) scaleX(1)}}
+
+    /* canvas confetti */
+    #confettiCanvas{position:absolute;inset:0;pointer-events:none;z-index:5}
+
+    /* responsive */
+    @media (max-width:760px){.card{grid-template-columns:1fr;align-items:start;padding:28px}.panel{order:3}.title-wrap{order:1}}
+
+    /* respect reduced motion */
+    @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <main class="stage">
+    <section class="card" role="region" aria-label="Hola Mundo Animated Card">
+      <div class="title-wrap">
+        <div class="badge">Demo • Animated</div>
+        <h1 class="hello">Hola Mundo</h1>
+        <p class="subtitle">A simple animated "Hola Mundo" template using HTML, CSS and JavaScript.</p>
+
+        <div class="typewriter" aria-live="polite">
+          <span class="wrap">Welcome — this template demonstrates CSS animations and a small confetti effect.</span>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:12px;align-items:center">
+          <button id="confettiBtn" style="padding:10px 14px;border-radius:10px;background:#0ea5a4;border:none;color:#042028;font-weight:700;cursor:pointer">Celebrate</button>
+          <button id="pauseBtn" style="padding:10px 14px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.9);cursor:pointer">Toggle Motion</button>
+        </div>
+
+        <span class="wave" aria-hidden="true"></span>
+      </div>
+
+      <aside class="panel" aria-label="Info panel">
+        <h4>How to use</h4>
+        <p>Click <strong>Celebrate</strong> to launch a short confetti animation. Use <strong>Toggle Motion</strong> to pause visual movement.</p>
+        <p>Copy this file and open it in any modern browser.</p>
+        <small style="color:rgba(255,255,255,0.55)">Built for learning & quick prototyping.</small>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // small confetti implementation (no libraries)
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = innerWidth;
+    let H = canvas.height = innerHeight;
+    let particles = [];
+    let animId = null;
+    let isPaused = false;
+
+    function rand(min,max){return Math.random()*(max-min)+min}
+
+    function resize(){W = canvas.width = innerWidth; H = canvas.height = innerHeight}
+    addEventListener('resize', resize);
+
+    function createParticles(x,y,amount=80){
+      for(let i=0;i<amount;i++){
+        particles.push({
+          x, y,
+          vx: rand(-6,6), vy: rand(-10,-2),
+          size: Math.floor(rand(6,12)),
+          color: `hsl(${Math.floor(rand(0,360))} ${Math.floor(rand(60,90))}% ${Math.floor(rand(40,60))}%)`,
+          life: rand(60,140)
+        });
+      }
+      if(!animId) animate();
+    }
+
+    function animate(){
+      animId = requestAnimationFrame(animate);
+      ctx.clearRect(0,0,W,H);
+      for(let i=particles.length-1;i>=0;i--){
+        let p = particles[i];
+        if(p.life<=0 || p.y>H+50){particles.splice(i,1);continue}
+        p.vy += 0.25; // gravity
+        p.x += p.vx; p.y += p.vy; p.life--;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.ellipse(p.x,p.y,p.size,p.size*0.6, 0,0,Math.PI*2);
+        ctx.fill();
+      }
+      if(particles.length===0){cancelAnimationFrame(animId);animId=null}
+    }
+
+    // Buttons
+    document.getElementById('confettiBtn').addEventListener('click', (e)=>{
+      const x = innerWidth/2; const y = innerHeight/3;
+      createParticles(x,y,120);
+    });
+
+    document.getElementById('pauseBtn').addEventListener('click', ()=>{
+      isPaused = !isPaused;
+      if(isPaused){document.documentElement.style.setProperty('--bg1','#071022');document.querySelectorAll('*').forEach(n=>n.style.animationPlayState='paused')}else{document.documentElement.style.removeProperty('--bg1');document.querySelectorAll('*').forEach(n=>n.style.animationPlayState='running')}
+    });
+
+    // Accessibility: stop animation if prefers-reduced-motion is set
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      document.getElementById('pauseBtn').style.display='none';
+      document.getElementById('confettiBtn').style.display='none';
+    }
+  </script>
+</body>
+</html>
